@@ -13,3 +13,7 @@
 ## Function Modifications / Additions
 * **client.get_dpi** - Added so you can now get the menu DPI scale easily.
 * **client.trace_line** - Traces now return the ending vector along with the percentage and entity hit within a table.
+* **renderer.rectangle** - Adds a radius argument for rounding a rectangle.
+* **renderer.rectangle_outline** - Adds a outlined rectangle with the same arguments as the regular rectangle.
+* **renderer.world_to_screen** - Returns nil if it failed to calculate the position instead of returning (0, 0).
+* **renderer.circle_3d** - Adds a circle that can be rendered in 3d space.
