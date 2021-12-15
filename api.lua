@@ -266,8 +266,45 @@ function renderer.measure_text(flags, ...)
     return vector(renderFunctions.measure_text(flags, ...))
 end
 
-function renderer.rectangle(position, size, color)
-    renderFunctions.rectangle(position.x, position.y, size.x, size.y, color.r, color.g, color.b, color.a)
+function renderer.rectangle(position, size, color, radius)
+    if (radius and radius > 0) then
+        if (radius > size.x / 2) then radius = size.x / 2 end
+        if (radius > size.y / 2) then radius = size.y / 2 end
+
+        renderFunctions.rectangle(position.x, position.y + radius, size.x, size.y - radius * 2, color.r, color.g, color.b, color.a);
+        renderFunctions.rectangle(position.x + radius, position.y, size.x - radius * 2, radius, color.r, color.g, color.b, color.a);
+        renderFunctions.rectangle(position.x + radius, position.y + size.y - radius, size.x - radius * 2, radius, color.r, color.g, color.b, color.a);
+
+        renderFunctions.circle(position.x + radius, position.y + radius, color.r, color.g, color.b, color.a, radius, 180, 0.25);
+        renderFunctions.circle(position.x + size.x - radius, position.y + radius, color.r, color.g, color.b, color.a, radius, 90, 0.25);
+        renderFunctions.circle(position.x + size.x - radius, position.y + size.y - radius, color.r, color.g, color.b, color.a, radius, 0, 0.25);
+        renderFunctions.circle(position.x + radius, position.y + size.y - radius, color.r, color.g, color.b, color.a, radius, 270, 0.25);
+    else
+        renderFunctions.rectangle(position.x, position.y, size.x, size.y, color.r, color.g, color.b, color.a)
+    end
+end
+
+function renderer.rectangle_outline(position, size, color, radius)
+    if (radius and radius > 0) then
+        if (radius > size.x / 2) then radius = size.x / 2 end
+        if (radius > size.y / 2) then radius = size.y / 2 end
+
+        renderFunctions.rectangle(position.x + radius, position.y, size.x - radius * 2, 1, color.r, color.g, color.b, color.a)
+        renderFunctions.rectangle(position.x + radius, position.y + size.y - 1, size.x - radius * 2, 1, color.r, color.g, color.b, color.a)
+        renderFunctions.rectangle(position.x, position.y + radius, 1, size.y - radius * 2, color.r, color.g, color.b, color.a)
+        renderFunctions.rectangle(position.x + size.x - 1, position.y + radius, 1, size.y - radius * 2, color.r, color.g, color.b, color.a)
+
+        renderFunctions.circle_outline(position.x + radius, position.y + radius, color.r, color.g, color.b, color.a, radius, 180, 0.25, 1);
+        renderFunctions.circle_outline(position.x + size.x - radius, position.y + radius, color.r, color.g, color.b, color.a, radius, 270, 0.25, 1);
+        renderFunctions.circle_outline(position.x + size.x - radius, position.y + size.y - radius, color.r, color.g, color.b, color.a, radius, 0, 0.25, 1);
+        renderFunctions.circle_outline(position.x + radius, position.y + size.y - radius, color.r, color.g, color.b, color.a, radius, 90, 0.25, 1);
+    else
+        renderFunctions.rectangle(position.x, position.y, size.x, 1, color.r, color.g, color.b, color.a)
+        renderFunctions.rectangle(position.x, position.y + size.y - 1, size.x, 1, color.r, color.g, color.b, color.a)
+
+        renderFunctions.rectangle(position.x, position.y + 1, 1, size.y - 2, color.r, color.g, color.b, color.a)
+        renderFunctions.rectangle(position.x + size.x - 1, position.y + 1, 1, size.y - 2, color.r, color.g, color.b, color.a)
+    end
 end
 
 function renderer.line(position, position2, color)
@@ -291,33 +328,64 @@ function renderer.triangle(position, position2, position3, color)
 end
 
 function renderer.world_to_screen(position)
-    return vector(renderFunctions.world_to_screen(position.x, position.y, position.z))
+    if (type(position.x) == "number" and type(position.y) == "number" and type(position.z) == "number") then
+        local vec = vector(renderFunctions.world_to_screen(position.x, position.y, position.z))
+
+        if (vec.x == 0 and vec.y == 0) then
+            return nil
+        else
+            return vec
+        end
+    else
+        return nil
+    end
 end
 
 function renderer.indicator(color, ...)
     renderFunctions.indicator(color.r, color.g, color.b, color.a, ...)
 end
 
-function renderer.texture(id, position, size, color, mode)
-    renderFunctions.texture(id, position.x, position.y, size.x, size.y, color.r, color.g, color.b, color.a, mode)
+function renderer.texture(id, position, size, color, mode, ...)
+    renderFunctions.texture(id, position.x, position.y, size.x, size.y, color.r, color.g, color.b, color.a, mode, ...)
 end
 
-function renderer.load_svg(contents, size)
-    renderFunctions.load_svg(contents, size.x, size.y)
+function renderer.load_svg(contents, size, ...)
+    renderFunctions.load_svg(contents, size.x, size.y, ...)
 end
 
-function renderer.load_png(contents, size)
-    renderFunctions.load_png(contents, size.x, size.y)
+function renderer.load_png(contents, size, ...)
+    renderFunctions.load_png(contents, size.x, size.y, ...)
 end
 
-function renderer.load_jpg(contents, size)
-    renderFunctions.load_jpg(contents, size.x, size.y)
+function renderer.load_jpg(contents, size, ...)
+    renderFunctions.load_jpg(contents, size.x, size.y, ...)
 end
 
-function renderer.load_rgba(contents, size)
-    renderFunctions.load_rgba(contents, size.x, size.y)
+function renderer.load_rgba(contents, size, ...)
+    renderFunctions.load_rgba(contents, size.x, size.y, ...)
 end
 
-function renderer.blur(position, size, opacity, blur_radius)
-    renderFunctions.blur(position.x, position.y, size.x, size.y, opacity, blur_radius)
+function renderer.blur(position, size, opacity, blur_radius, ...)
+    renderFunctions.blur(position.x, position.y, size.x, size.y, opacity, blur_radius, ...)
+end
+
+function renderer.circle_3d(position, col, radius, outline)
+    local prevScreen, screenPos, step, addedRotation = vector(0, 0), vector(0, 0), math.pi * 2 / 72, (math.pi * 2 * radius) / 360
+    local scrPos = renderer.world_to_screen(position)
+
+    if (scrPos) then
+        for rotation = 0, math.pi * 2, step do
+            local pos = vector(radius * math.cos(rotation + 1) + position.x, radius * math.sin(rotation + 1) + position.y, position.z)
+            screenPos = renderer.world_to_screen(pos)
+
+            if (screenPos) then
+                if (prevScreen.x ~= 0 and prevScreen.y ~= 0) then
+                    renderer.triangle(screenPos, scrPos, prevScreen, col)
+                    if (outline) then renderer.line(screenPos, prevScreen, color(col.r, col.g, col.b, 255)) end
+                end
+
+                prevScreen = screenPos
+            end
+        end
+    end
 end
